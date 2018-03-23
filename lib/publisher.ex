@@ -1,8 +1,8 @@
 defmodule KaufmannEx.Publisher do
   @moduledoc """
     Publishes Avro encoded messages to the default topic (`KaufmannEx.Config.default_topic/0`).
-    
-    
+
+
   """
   require Logger
   alias KafkaEx.Protocol.Produce.Message
@@ -38,7 +38,7 @@ defmodule KaufmannEx.Publisher do
       Logger.debug(fn -> "Publishing Event #{message_name} on #{topic}" end)
       message = %Message{value: payload, key: message_name}
 
-      # TODO: Pull Partition Info from somewhere 
+      # TODO: Pull Partition Info from somewhere
       # maybe choose random partition or use md5 hash of message?
       produce_request = %Request{
         partition: 0,
@@ -73,13 +73,8 @@ defmodule KaufmannEx.Publisher do
     prepends the message_name with "event.error"
   """
   @spec publish_error(String.t() | atom, any, any, any) :: :ok | {:error, any}
-  def publish_error(event_name, error, _orig_payload, meta \\ %{}) do
-    error_payload = %{
-      error: error
-    }
-
-    publish(:"event.error.#{event_name}", error_payload, meta)
-  end
+  def publish_error(event_name, error, _orig_payload, meta \\ %{}), do:
+    publish(:"event.error.#{event_name}", %{error: error}, meta)
 
   @doc """
     Publishes error for a given event
@@ -87,18 +82,14 @@ defmodule KaufmannEx.Publisher do
     prepends the message_name with "event.error"
   """
   @spec publish_error(KaufmannEx.Schemas.Event.t(), term) :: :ok | {:error, any}
-  def publish_error(%KaufmannEx.Schemas.Event{} = event, error) do
-    error_payload = %{
-      error: error
-    }
+  def publish_error(%KaufmannEx.Schemas.Event{} = event, error) , do:
+    publish(:"event.error.#{event.name}", %{error: error}, event.meta)
 
-    publish(:"event.error.#{event.name}", error_payload, event.meta)
-  end
 
   @doc """
   Injects metadata then calls `produce/2`
 
-  Inserted metadata conforms to the `event_metadata/2` 
+  Inserted metadata conforms to the `event_metadata/2`
 
   Events with Metadata are produced to the Producer set in config `:kaufmann_ex, :producer_mod`. This defaults to `KaufmannEx.Publisher`
   """
@@ -114,7 +105,7 @@ defmodule KaufmannEx.Publisher do
   end
 
   @doc """
-  generate metadata for an event 
+  generate metadata for an event
 
   ```
   %{
@@ -141,9 +132,9 @@ defmodule KaufmannEx.Publisher do
     }
   end
 
-  defp log_time_took(nil, _), do: nil
-
-  defp log_time_took(timestamp, event_name) do
+  @doc false
+  def log_time_took(nil, _), do: nil
+  def log_time_took(timestamp, event_name) do
     {:ok, published_at, _} = DateTime.from_iso8601(timestamp)
     took = DateTime.diff(DateTime.utc_now(), published_at, :millisecond)
 
