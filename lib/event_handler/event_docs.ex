@@ -38,7 +38,12 @@ defmodule KaufmannEx.EventHandler.EventDocs do
   defmacro __before_compile__(_env) do
     quote do
       def expected_events, do: List.flatten(@expected_events) |> Enum.map(&elem(&1, 0)) |> Enum.uniq()
-      def produced_events, do: List.flatten(@produced_events) |> Enum.map(&elem(&1, 0)) |> Enum.uniq()
+      def produced_events do
+        events = List.flatten(@produced_events) |> Enum.map(&elem(&1, 0)) |> Enum.uniq()
+        if @event_docs_infer_events do
+          expected_events
+        end
+      end
     end
   end
 

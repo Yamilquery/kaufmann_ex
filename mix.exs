@@ -23,14 +23,14 @@ defmodule KaufmannEx.MixProject do
       links: %{
         GitHub: "https://github.com/sevenmind/kaufmann_ex"
       },
-      licesnses: ["MIT"]
+      licenses: ["MIT"]
     ]
   end
 
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger, :kafka_ex]
+      extra_applications: [:logger]
     ]
   end
 

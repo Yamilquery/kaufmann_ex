@@ -44,4 +44,12 @@ defmodule KaufmannEx.Supervisor do
     opts = [strategy: :one_for_one]
     Supervisor.init(children, opts)
   end
+
+  def spec(opts \\ [] ) do
+    %{
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, opts},
+      type: :supervisor
+    }
+  end
 end
