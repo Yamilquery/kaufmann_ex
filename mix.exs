@@ -55,7 +55,13 @@ defmodule KaufmannEx.MixProject do
       {:bypass, "~> 0.8", only: :test},
       {:excoveralls, "~> 0.8", only: :test},
       {:mix_test_watch, "~> 0.5", only: :dev, runtime: false},
-      {:inch_ex, only: :docs}
+      {:inch_ex, only: :docs},
+      {:benchee, "~> 0.11", only: :dev},
+      {:exprof, "~> 0.2.0"},
+
+      # Elixometer wants an older version of setup, breaks deps.compile
+      {:setup, "~> 2.0.2", override: true, manager: :rebar},
+      {:elixometer, github: "pinterest/elixometer"}
     ]
   end
 
