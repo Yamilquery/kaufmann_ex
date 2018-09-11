@@ -32,20 +32,28 @@ defmodule KaufmannEx.Stages.EventHandler do
   end
 
   @doc """
-  Decodes Avro encoded message value, transforms event into tuple of `{:message_name, %Payload{}}`
+  Decodes Avro encoded message value
 
-  Returns `{key, value}`
+  Returns Event or Error
   """
   @spec decode_event(map) :: KaufmannEx.Schemas.Event.t() | KaufmannEx.Schemas.ErrorEvent.t()
-  def decode_event(%{key: key, value: value}) do
+  def decode_event(%{key: key, value: value} = event) do
     event_name = key |> String.to_atom()
 
     case KaufmannEx.Schemas.decode_message(key, value) do
-      {:ok, parsed} ->
+      {:ok, %{meta: meta, payload: payload}} ->
+        Logger.debug([
+          meta[:message_name],
+          " ",
+          meta[:message_id],
+          " from ",
+          meta[:emitter_service_id]
+        ])
+
         %KaufmannEx.Schemas.Event{
           name: event_name,
-          meta: parsed[:meta],
-          payload: parsed[:payload]
+          meta: meta,
+          payload: payload
         }
 
       {:error, error} ->

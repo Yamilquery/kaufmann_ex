@@ -28,7 +28,7 @@ defmodule KaufmannEx.Publisher do
   def produce(topic, message_name, data, context) do
     with {:ok, payload} <- KaufmannEx.Schemas.encode_message(message_name, data),
          {:ok, partition} <- PartitionSelector.choose_partition(topic, context) do
-      Logger.debug(fn -> "Publishing Event #{message_name} on #{topic}@#{partition}" end)
+      Logger.debug("Publishing Event #{message_name} on #{topic}@#{partition}")
 
       message = %Message{value: payload, key: message_name}
 
